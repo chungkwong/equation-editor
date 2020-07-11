@@ -9,9 +9,7 @@
 5. **Copy-and-paste support**. You can move part of an equation freely.
 6. **True WYSIWYG (What you see is what you get)**. You can see equations rendered with MathJax as you edit, so high-quality typography is expected.
 
-## Demo
-
-To be added.
+## [Demo](http://chungkwong.cc/equation-editor/equation-editor.html)
 
 ## Usage
 
@@ -92,7 +90,7 @@ POSSIBILITY OF SUCH DAMAGE.
 5. **支持复制粘贴**。您可以灵活搬运数学公式及其组成部分。
 6. **真正即见即所得**。您在编辑时可立刻看到用MathJax渲染的高质量公式。
 
-## 演示
+## [演示](http://chungkwong.cc/equation-editor/equation-editor.html)
 
 敬请期待。
 
