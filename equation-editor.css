@@ -1,0 +1,14 @@
+.equation-editor-highlighted{background-color: yellow;}
+.equation-editor-current{color: red;}
+.equation-editor{border:1pt solid black;text-align: center;}
+.equation-editor:focus,.equation-editor:focus-within{border:1pt solid purple;}
+.equation-editor-stacked{position: relative;margin: 5pt;display: inline-block;}
+.equation-editor-selection{z-index: 0;position: absolute;border: 1pt solid orange;}
+.equation-editor-preview{left:0;top:0;z-index: 1;position: relative;font-size: 400%;}
+.equation-editor-anchor{width:1pt;z-index: 2;position: absolute;background-color: green;}
+.equation-editor-caret{width:1pt;z-index: 3;position: absolute;background-color: blue;}
+.equation-editor-hover{width:1pt;z-index: 4;position: absolute;background-color: red;}
+.equation-editor-toolbar{overflow:hidden;}
+.equation-editor-command button{padding: 0;border: 0;}
+.equation-editor-toolbar button{padding: 0;border: 0;width: 2em;height: 2em;}
+mjx-mrow:empty{width: 1ex;height:1ex;border: 1pt solid darkgray;line-height:1ex;}

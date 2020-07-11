@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="text/javascript" src="equation-editor.js"></script>
+    <link rel="stylesheet" type="text/css" href="equation-editor.css">
+  </head>
+  <body>
+    <h2>Equation editor by Chungkwong Chan</h2>
+    <div id='EquationEditor'></div>
+    LaTeX:
+    <div id='LatexOutput'></div>
+    MathML:
+    <div id='MathmlOutput'></div>
+    <script>
+      var latexOutput=document.getElementById('LatexOutput');
+      var mathmlOutput=document.getElementById('MathmlOutput');
+      var equationEditor=createEquationEditor(document.getElementById('EquationEditor'));
+      equationEditor.addListener(function(){
+        latexOutput.textContent=equationEditor.getLatex();
+        mathmlOutput.textContent=equationEditor.getMathml();
+      });
+      window.onload=function(){
+        equationEditor.setMathml('<mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>±</mo><msqrt><mrow><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow>');
+      };
+    </script>
+  </body>
+</html>
