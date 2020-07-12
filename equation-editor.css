@@ -11,4 +11,5 @@
 .equation-editor-toolbar{overflow:hidden;}
 .equation-editor-command button{padding: 0;border: 0;}
 .equation-editor-toolbar button{padding: 0;border: 0;width: 2em;height: 2em;}
-mjx-mrow:empty{width: 1ex;height:1ex;border: 1pt solid darkgray;line-height:1ex;}
+.equation-editor-placeholder{color: darkgray;}
+.equation-editor-exchange{width:0px;height: 0px;}

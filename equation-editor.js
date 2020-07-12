@@ -25,6 +25,10 @@ var createEquationEditor=function(container){
   var toolbar=document.createElement('div');
   toolbar.classList.add('equation-editor-toolbar');
   container.appendChild(toolbar)
+  var exchange=document.createElement('div');
+  exchange.tabIndex=1000;
+  exchange.classList.add('equation-editor-exchange');
+  container.appendChild(exchange)
   var buffer=document.createElement('math');
   buffer.appendChild(document.createElement('mrow'));
   var changeListeners=[];
@@ -267,8 +271,16 @@ var createEquationEditor=function(container){
     old.id='math'+uniqueId;
     var result=document.createElement(old.tagName);
     result.id='imath'+uniqueId;
-    if(old.childElementCount==0)
-      result.textContent=old.textContent;
+    if(old.childElementCount==0){
+      if(old.tagName.toLowerCase()=='mrow'){
+        var placeholder=document.createElement('mo');
+        placeholder.classList.add('equation-editor-placeholder')
+        placeholder.textContent='□';
+        result.appendChild(placeholder);
+      }else{
+        result.textContent=old.textContent;
+      }
+    }
     ++uniqueId;
     for(var i=0;i<old.childElementCount;i++){
       result.appendChild(deepCopy(old.children[i]));
@@ -677,14 +689,36 @@ var createEquationEditor=function(container){
     caret=caretPositions.length-1;
     displayEquation();
   }
+  var writeToClipboard=function(text){
+    exchange.textContent=text;
+    exchange.focus();
+    document.getSelection().removeAllRanges();
+    var range=new Range();
+    range.selectNodeContents(exchange);
+    document.getSelection().addRange(range);
+    document.execCommand('copy');
+    exchange.textContent='';
+    container.focus();
+  }
+  var readFromClipboard=function(){
+    exchange.focus();
+    document.execCommand('paste');
+    var text=exchange.textContent;
+    exchange.textContent='';
+    container.focus();
+    return text;
+  };
   var cut=function(){
-    navigator.clipboard.writeText(removeSelection().outerHTML.replace(/ id=[^>]*/g,''));
+    // navigator.clipboard.writeText(removeSelection().outerHTML.replace(/ id=[^>]*/g,''));
+    writeToClipboard(removeSelection().outerHTML.replace(/ id=[^>]*/g,''));
     updateEquation();
   }
   var copy=function(){
-    navigator.clipboard.writeText(getSelection().outerHTML.replace(/ id=[^>]*/g,''));
+    // navigator.clipboard.writeText(getSelection().outerHTML.replace(/ id=[^>]*/g,''));
+    writeToClipboard(getSelection().outerHTML.replace(/ id=[^>]*/g,''));
   }
   var paste=function(){
+    // var text=readFromClipboard();
     navigator.clipboard.readText().then((text)=>{
       removeSelection();
       var math=document.createElement('math');
