@@ -40,6 +40,7 @@ var createEquationEditor=function(container){
   var hoverCursor=-1;
   var dragAnchorStart=-1, dragAnchorEnd=-1;
   var caret=0,anchor=0;
+  var pesudoClipboard='<mrow></mrow>';
   var addAllBefore=function(tree,after){
     while(tree.firstElementChild){
       after.parentElement.insertBefore(tree.firstElementChild,after);
@@ -690,6 +691,7 @@ var createEquationEditor=function(container){
     displayEquation();
   }
   var writeToClipboard=function(text){
+    pesudoClipboard=text;
     exchange.textContent=text;
     exchange.focus();
     document.getSelection().removeAllRanges();
@@ -717,20 +719,25 @@ var createEquationEditor=function(container){
     // navigator.clipboard.writeText(getSelection().outerHTML.replace(/ id=[^>]*/g,''));
     writeToClipboard(getSelection().outerHTML.replace(/ id=[^>]*/g,''));
   }
+  var pasteText=function(text){
+    removeSelection();
+    var math=document.createElement('math');
+    math.innerHTML=text;
+    var child;
+    anchor=caret;
+    for(var i=0;i<math.childElementCount;i++){
+      child=math.children[i];
+      insert(child,getCaretPositionCount(child)-1);
+    }
+    updateEquation();
+  };
   var paste=function(){
     // var text=readFromClipboard();
-    navigator.clipboard.readText().then((text)=>{
-      removeSelection();
-      var math=document.createElement('math');
-      math.innerHTML=text;
-      var child;
-      anchor=caret;
-      for(var i=0;i<math.childElementCount;i++){
-        child=math.children[i];
-        insert(child,getCaretPositionCount(child)-1);
-      }
-      updateEquation();
-    });
+    if(navigator.clipboard){
+      navigator.clipboard.readText().then(pasteText);
+    }else{
+      pasteText(pesudoClipboard);
+    }
   }
   var insertSymbol=function(name){
     removeSelection();
@@ -748,6 +755,21 @@ var createEquationEditor=function(container){
     updateEquation();
 
   }
+  var addStructureIcon=function(icon,action){
+    var button=document.createElement('button');
+    button.onclick=action;
+    button.innerHTML=icon;
+    toolbar.appendChild(button);
+  };
+  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub);
+  addStructureIcon('<math><msup><mi>■</mi><mi>□</mi></msup></math>',insertSup);
+  addStructureIcon('<math><mfrac><mi>□</mi><mi>■</mi></mfrac></math>',insertFraction);
+  addStructureIcon('<math><msqrt><mi>□</mi></msqrt></math>',insertSquareRoot);
+  addStructureIcon('<math><mroot><mi>□</mi><mi>■</mi></mroot></math>',insertNthRoot);
+  addStructureIcon('⌫',deleteBackward);
+  addStructureIcon('◁',moveAnchorAndCaretBackward);
+  addStructureIcon('▷',moveAnchorAndCaretForward);
+  addStructureIcon('⌦',deleteForward);
   var addSymbolIcon=function(element){
     var button=document.createElement('button');
     button.onclick=function(){
@@ -792,21 +814,6 @@ var createEquationEditor=function(container){
   for(i in operators){
     addOperatorIcon(operators[i])
   }
-  var addStructureIcon=function(icon,action){
-    var button=document.createElement('button');
-    button.onclick=action;
-    button.innerHTML=icon;
-    toolbar.appendChild(button);
-  };
-  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub);
-  addStructureIcon('<math><msup><mi>■</mi><mi>□</mi></msup></math>',insertSup);
-  addStructureIcon('<math><mfrac><mi>□</mi><mi>■</mi></mfrac></math>',insertFraction);
-  addStructureIcon('<math><msqrt><mi>□</mi></msqrt></math>',insertSquareRoot);
-  addStructureIcon('<math><mroot><mi>□</mi><mi>■</mi></mroot></math>',insertNthRoot);
-  addStructureIcon('⌫',deleteBackward);
-  addStructureIcon('◁',moveAnchorAndCaretBackward);
-  addStructureIcon('▷',moveAnchorAndCaretForward);
-  addStructureIcon('⌦',deleteForward);
   var COMMANDS=new Map();
   COMMANDS.set("\\{","{");
   COMMANDS.set("\\}","}");

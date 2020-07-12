@@ -92,8 +92,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ## [演示](http://chungkwong.cc/equation-editor/equation-editor.html)
 
-敬请期待。
-
 ## 用法
 
 参考以下例子:
