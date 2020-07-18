@@ -41,6 +41,9 @@ var createEquationEditor=function(container){
   var dragAnchorStart=-1, dragAnchorEnd=-1;
   var caret=0,anchor=0;
   var pesudoClipboard='<mrow></mrow>';
+  var historyRecoving=false;
+  var historyList=[];
+  var historyIndex=-1;
   var addAllBefore=function(tree,after){
     while(tree.firstElementChild){
       after.parentElement.insertBefore(tree.firstElementChild,after);
@@ -332,6 +335,12 @@ var createEquationEditor=function(container){
     window.MathJax.typeset([preview]);
     var rect=stacked.getBoundingClientRect();
     updateCaretPositions(buffer.firstElementChild,false,rect.x,rect.y);
+    if(!historyRecoving){
+      var historyRecord={'caret':caret,'anchor':anchor,'mathml':buffer.innerHTML};
+      ++historyIndex;
+      historyList.splice(historyIndex);
+      historyList.push(historyRecord);
+    }
     displayEquation();
     for(let listener of changeListeners){
       listener();
@@ -739,6 +748,30 @@ var createEquationEditor=function(container){
       pasteText(pesudoClipboard);
     }
   }
+  var undo=function(){
+    historyRecoving=true;
+    if(historyIndex>0){
+      --historyIndex;
+      var historyRecord=historyList[historyIndex];
+      caret=historyRecord.caret;
+      anchor=historyRecord.anchor;
+      buffer.innerHTML=historyRecord.mathml;
+      updateEquation();
+    }
+    historyRecoving=false;
+  };
+  var redo=function(){
+    historyRecoving=true;
+    if(historyIndex+1<historyList.length){
+      ++historyIndex;
+      var historyRecord=historyList[historyIndex];
+      caret=historyRecord.caret;
+      anchor=historyRecord.anchor;
+      buffer.innerHTML=historyRecord.mathml;
+      updateEquation();
+    }
+    historyRecoving=false;
+  };
   var insertSymbol=function(name){
     removeSelection();
     var type;
@@ -755,21 +788,26 @@ var createEquationEditor=function(container){
     updateEquation();
 
   }
-  var addStructureIcon=function(icon,action){
+  var addStructureIcon=function(icon,action,tooltip){
     var button=document.createElement('button');
     button.onclick=action;
     button.innerHTML=icon;
+    button.title=tooltip;
     toolbar.appendChild(button);
   };
-  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub);
-  addStructureIcon('<math><msup><mi>■</mi><mi>□</mi></msup></math>',insertSup);
-  addStructureIcon('<math><mfrac><mi>□</mi><mi>■</mi></mfrac></math>',insertFraction);
-  addStructureIcon('<math><msqrt><mi>□</mi></msqrt></math>',insertSquareRoot);
-  addStructureIcon('<math><mroot><mi>□</mi><mi>■</mi></mroot></math>',insertNthRoot);
-  addStructureIcon('⌫',deleteBackward);
-  addStructureIcon('◁',moveAnchorAndCaretBackward);
-  addStructureIcon('▷',moveAnchorAndCaretForward);
-  addStructureIcon('⌦',deleteForward);
+  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub,'Suscript');
+  addStructureIcon('<math><msup><mi>■</mi><mi>□</mi></msup></math>',insertSup,'Superscript');
+  addStructureIcon('<math><mfrac><mi>□</mi><mi>■</mi></mfrac></math>',insertFraction,'Fraction');
+  addStructureIcon('<math><msqrt><mi>□</mi></msqrt></math>',insertSquareRoot,'Square root');
+  addStructureIcon('<math><mroot><mi>□</mi><mi>■</mi></mroot></math>',insertNthRoot,'Nth root');
+  addStructureIcon('↶',undo,'Undo');
+  addStructureIcon('↷',redo,'Redo');
+  addStructureIcon('◁',moveAnchorAndCaretBackward,'Move caret backward');
+  addStructureIcon('▷',moveAnchorAndCaretForward,'Move caret forward');
+  addStructureIcon('⌫',deleteBackward,'Delete backward');
+  addStructureIcon('⌦',deleteForward,'Delete forward');
+  addStructureIcon('✂',cut,'Cut')
+  addStructureIcon('⎘',paste,'Paste')
   var addSymbolIcon=function(element){
     var button=document.createElement('button');
     button.onclick=function(){
@@ -958,6 +996,8 @@ var createEquationEditor=function(container){
             case 'c':copy();return;
             case 'x':cut();return;
             case 'v':paste();return;
+            case 'z':undo();return;
+            case 'y':redo();return;
           }
         }
         if(!e.isComposing){
