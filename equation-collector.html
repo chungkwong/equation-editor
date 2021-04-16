@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>数学公式采集</title>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <!-- <script type="text/javascript" src="equation-editor.js"></script>
+        <link rel="stylesheet" type="text/css" href="equation-editor.css"> -->
+        <script type="text/javascript" src="drawing-pad.js"></script>
+        <script type='text/javascript'>
+            window.addEventListener('load', function () {
+                var formulas=[
+                    '<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>z</mi></mrow></mfrac></mrow></math>',
+                    '<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>±</mo><msqrt><mrow><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow></math>'
+                ];
+                var traceLists=[];
+                var currentFormula=0;
+                var canvas = createDrawingPad(document.getElementById('drawing-pad'));
+                canvas.width=window.innerWidth;
+                canvas.height=window.innerHeight/2;
+                // var equationEditor=createEquationEditor(document.getElementById('equation-editor'));
+                var equationViewer=document.getElementById('typeset-formula');
+                var toolbar=document.getElementById('toolbar');
+                var setEquation=function(mathml){
+                    equationViewer.innerHTML=mathml;
+                    MathJax.typeset([equationViewer]);
+                    canvas.height=window.innerHeight-toolbar.offsetHeight;
+                };
+                setEquation(formulas[currentFormula]);
+                document.getElementById('clear').onclick=canvas.clearTraceList;
+                document.getElementById('undo').onclick=canvas.removeLastTrace;
+                document.getElementById('submit').onclick=function(){
+                    if(currentFormula<formulas.length){
+                        traceLists.push(canvas.getTraceList());
+                        window.traceLists=traceLists;
+                    }
+                    ++currentFormula;
+                    if(currentFormula<formulas.length){
+                        setEquation(formulas[currentFormula]);
+                    }
+                };
+                window.addEventListener('resize',function(){
+                    canvas.width=window.innerWidth;
+                    canvas.height=window.innerHeight-toolbar.offsetHeight;
+                });
+            },false); // end window.onLoad
+        </script>
+        <style>
+            #drawing-pad{
+                width:100vw;
+                /* height:50vh; */
+            }
+            #drawing-pad canvas{
+                border:1px solid #777;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- <div id='equation-editor'></div> -->
+        <div id='drawing-pad'></div>
+        <div id='toolbar'>
+            <div id='typeset-formula'></div>
+            <button id='clear'>重写</button>
+            <button id='undo'>撤销</button>
+            <button id='submit'>提交</button>
+        </div>
+    </body>
+</html>
