@@ -10,10 +10,56 @@
         <script type="text/javascript" src="drawing-pad.js"></script>
         <script type='text/javascript'>
             window.addEventListener('load', function () {
-                var formulas=[
-                    '<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>z</mi></mrow></mfrac></mrow></math>',
-                    '<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>±</mo><msqrt><mrow><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow></math>'
-                ];
+                var formulas=[];
+                var addFormula=function(formula,count){
+                    for(var i=0;i<count;i++){
+                        formulas.push(formula);
+                    }
+                }
+                addFormula('<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>z</mi></mrow></mfrac></mrow></math>',1);
+                addFormula('<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>±</mo><msqrt><mrow><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow></math>',1);
+                addFormula('<math><mrow><mo>:</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>;</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>?</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>@</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⋐</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⋑</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⇑</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>‡</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≑</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≒</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≧</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≫</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≦</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≶</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>≪</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⌞</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⌟</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>↖</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>œ</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⫅</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⫋</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⫆</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⊋</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⫌</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>↙</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⌜</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>υ</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⌝</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>℘</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>¥</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>€</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>£</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>₩</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>¢</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>‰</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>↕</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>↼</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>↽</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⇁</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⇋</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>⇕</mo></mrow></math>',1);
+                addFormula('<math><mrow><mo>∰</mo></mrow></math>',1);
                 var traceLists=[];
                 var currentFormula=0;
                 var canvas = createDrawingPad(document.getElementById('drawing-pad'));
@@ -30,12 +76,7 @@
                 setEquation(formulas[currentFormula]);
                 document.getElementById('clear').onclick=canvas.clearTraceList;
                 document.getElementById('undo').onclick=canvas.removeLastTrace;
-                document.getElementById('submit').onclick=function(){
-                    if(currentFormula<formulas.length){
-                        var pair={mathml:formulas[currentFormula],traceList:canvas.getTraceList()}
-                        traceLists.push(pair);
-                        window.traceLists=traceLists;
-                    }
+                var showNextFormula=function(){
                     ++currentFormula;
                     if(currentFormula<formulas.length){
                         setEquation(formulas[currentFormula]);
@@ -43,9 +84,25 @@
                         document.getElementById('export').click();
                     }
                 };
+                document.getElementById('skip').onclick=showNextFormula;
+                document.getElementById('submit').onclick=function(){
+                    if(currentFormula<formulas.length){
+                        var pair={mathml:formulas[currentFormula],traceList:canvas.getTraceList()}
+                        traceLists.push(pair);
+                        window.traceLists=traceLists;
+                    }
+                    showNextFormula();
+                };
                 document.getElementById('export').onclick=function(){
                     document.body.innerHTML='';
-                    document.body.textContent=JSON.stringify(traceLists,null,2);
+                    var exportContent=JSON.stringify(traceLists);
+                    var a = document.createElement('a');
+                    const file = new Blob([exportContent], {type: 'text/plain'});
+                    a.href= URL.createObjectURL(file);
+                    a.download = 'formulae.txt';
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                    document.body.textContent=exportContent;
                     var range=document.createRange();
                     range.selectNode(document.body);
                     document.getSelection().addRange(range);
@@ -71,7 +128,8 @@
                 border:1px solid #777;
             }
             button{
-                font-size: 100%;
+                font-size: 75%;
+                padding: 0;
             }
         </style>
     </head>
@@ -83,6 +141,7 @@
             <button id='export'>导出</button>
             <button id='clear'>重写</button>
             <button id='undo'>撤销</button>
+            <button id='skip'>跳过</button>
             <button id='submit'>提交</button>
         </div>
     </body>
