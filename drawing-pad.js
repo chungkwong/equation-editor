@@ -6,13 +6,13 @@ var createDrawingPad=function(container){
     context.fillStyle="black";
     var drawing=false;
     var traces=[];
-    var currentTrace=[]
+    var currentTrace=[];
     var drawstart=function(event){
         context.beginPath();
         var x=event.pageX-canvas.offsetLeft;
         var y=event.pageY-canvas.offsetTop;
         context.moveTo(x,y);
-        currentTrace.push([x,y]);
+        currentTrace.push([Math.round(x),Math.round(y)]);
         context.fillRect(x-lineWidth/2,y-lineWidth/2,lineWidth,lineWidth);
         drawing=true;
     };
@@ -21,7 +21,7 @@ var createDrawingPad=function(container){
             var x=event.pageX-canvas.offsetLeft;
             var y=event.pageY-canvas.offsetTop;
             context.lineTo(x,y);
-            currentTrace.push([x,y]);
+            currentTrace.push([Math.round(x),Math.round(y)]);
             context.stroke();
         }
     };
