@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>数学公式采集</title>
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <!-- <script type="text/javascript" src="equation-editor.js"></script>
@@ -16,7 +17,7 @@
                 var traceLists=[];
                 var currentFormula=0;
                 var canvas = createDrawingPad(document.getElementById('drawing-pad'));
-                canvas.width=window.innerWidth;
+                canvas.width=window.innerWidth-2;
                 canvas.height=window.innerHeight/2;
                 // var equationEditor=createEquationEditor(document.getElementById('equation-editor'));
                 var equationViewer=document.getElementById('typeset-formula');
@@ -24,34 +25,53 @@
                 var setEquation=function(mathml){
                     equationViewer.innerHTML=mathml;
                     MathJax.typeset([equationViewer]);
-                    canvas.height=window.innerHeight-toolbar.offsetHeight;
+                    canvas.height=window.innerHeight-toolbar.offsetHeight-2;
                 };
                 setEquation(formulas[currentFormula]);
                 document.getElementById('clear').onclick=canvas.clearTraceList;
                 document.getElementById('undo').onclick=canvas.removeLastTrace;
                 document.getElementById('submit').onclick=function(){
                     if(currentFormula<formulas.length){
-                        traceLists.push(canvas.getTraceList());
+                        var pair={mathml:formulas[currentFormula],traceList:canvas.getTraceList()}
+                        traceLists.push(pair);
                         window.traceLists=traceLists;
                     }
                     ++currentFormula;
                     if(currentFormula<formulas.length){
                         setEquation(formulas[currentFormula]);
+                    }else{
+                        document.getElementById('export').click();
                     }
                 };
+                document.getElementById('export').onclick=function(){
+                    document.body.innerHTML='';
+                    document.body.textContent=JSON.stringify(traceLists,null,2);
+                    var range=document.createRange();
+                    range.selectNode(document.body);
+                    document.getSelection().addRange(range);
+                    document.execCommand('copy');
+                };
                 window.addEventListener('resize',function(){
-                    canvas.width=window.innerWidth;
-                    canvas.height=window.innerHeight-toolbar.offsetHeight;
+                    canvas.width=window.innerWidth-2;
+                    canvas.height=window.innerHeight-toolbar.offsetHeight-2;
                 });
             },false); // end window.onLoad
         </script>
         <style>
+            body{
+                padding: 0;
+                margin: 0;
+                font-size: 200%;
+            }
             #drawing-pad{
                 width:100vw;
                 /* height:50vh; */
             }
             #drawing-pad canvas{
                 border:1px solid #777;
+            }
+            button{
+                font-size: 100%;
             }
         </style>
     </head>
@@ -60,6 +80,7 @@
         <div id='drawing-pad'></div>
         <div id='toolbar'>
             <div id='typeset-formula'></div>
+            <button id='export'>导出</button>
             <button id='clear'>重写</button>
             <button id='undo'>撤销</button>
             <button id='submit'>提交</button>
