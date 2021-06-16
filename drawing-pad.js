@@ -27,18 +27,21 @@ var createDrawingPad=function(container){
     };
     var drawend=function(event){
         if(drawing){
-            drawmove(event);
+            //drawmove(event);
             traces.push(currentTrace);
             currentTrace=[];
             drawing=false;
         }
     };
-    canvas.addEventListener('touchstart',function(event){drawstart(event.touches[0])});
-    canvas.addEventListener('touchmove',function(event){drawmove(event.touches[0]);event.preventDefault();});
-    canvas.addEventListener('touchend',function(event){drawend(event.changedTouches[0])});
-    canvas.addEventListener('mousedown',drawstart);
-    canvas.addEventListener('mousemove',drawmove);
-    canvas.addEventListener('mouseup',drawend);
+    if('ontouchstart' in document.documentElement){
+        canvas.addEventListener('touchstart',function(event){drawstart(event.touches[0]);});
+        canvas.addEventListener('touchmove',function(event){drawmove(event.touches[0]);event.preventDefault();});
+        canvas.addEventListener('touchend',function(event){drawend(event.changedTouches[0])});
+    }else{
+        canvas.addEventListener('mousedown',drawstart);
+        canvas.addEventListener('mousemove',drawmove);
+        canvas.addEventListener('mouseup',drawend);    
+    }    
     container.appendChild(canvas);
     canvas.getTraceList=function(){
         return traces;
