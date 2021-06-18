@@ -1,4 +1,4 @@
-var createDrawingPad=function(container){
+var createDrawingPad=function(container,colorList){
     canvas=document.createElement('canvas');
     var lineWidth=3.0;
     var context=canvas.getContext('2d');
@@ -7,7 +7,13 @@ var createDrawingPad=function(container){
     var drawing=false;
     var traces=[];
     var currentTrace=[];
+    var updateColor=function(i){
+        var currentColor=colorList[i%colorList.length];
+        context.fillStyle=currentColor;
+        context.strokeStyle=currentColor;
+    };
     var drawstart=function(event){
+        updateColor(traces.length);
         context.beginPath();
         var x=event.pageX-canvas.offsetLeft;
         var y=event.pageY-canvas.offsetTop;
@@ -50,9 +56,9 @@ var createDrawingPad=function(container){
         traces=traceList;
         context.fillStyle = "rgba(255,255,255,255)";
         context.fillRect(0,0,canvas.width,canvas.height);
-        context.fillStyle = "black";
         for(var i in traceList){
             var trace=traceList[i];
+            updateColor(i);
             if(trace.length>1){
                 context.beginPath();
                 context.moveTo(trace[0][0],trace[0][1]);
@@ -74,5 +80,5 @@ var createDrawingPad=function(container){
             canvas.setTraceList(traces);
         }
     };
-    return canvas 
+    return canvas;
 }

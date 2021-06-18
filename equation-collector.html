@@ -60,16 +60,36 @@
                 addFormula('<math><mrow><mo>⇋</mo></mrow></math>',10);
                 addFormula('<math><mrow><mo>⇕</mo></mrow></math>',10);
                 addFormula('<math><mrow><mo>∰</mo></mrow></math>',10);
+                var strokeNumber={"!":2,"#":4,"$":2,"%":3,"*":3,"+":2,"4":2,":":2,";":2,"=":2,"?":2,"A":3,"B":2,"D":2,"E":3,"F":3,"G":2,"H":3,"I":3,"J":2,"K":2,"M":2,"N":2,"P":2,"Q":2,"R":2,"T":2,"X":2,"Y":2,"[":2,"]":2,"b":2,"d":2,"f":2,"i":2,"j":2,"k":2,"p":2,"q":2,"t":2,"x":2,"y":2,"¥":4,"§":2,"©":2,"±":3,"×":2,"æ":2,"÷":3,"œ":2,"Δ":2,"Θ":4,"Ξ":3,"Φ":2,"Ψ":2,"θ":2,"κ":2,"λ":2,"μ":2,"π":3,"τ":2,"χ":2,"ψ":2,"ħ":2,"ћ":2,"ℏ":2,"א":3,"†":2,"‡":3,"←":2,"↑":2,"→":2,"↓":2,"↔":3,"↖":2,"↗":2,"↘":2,"↙":2,"↦":3,"↪":2,"⇐":3,"⇑":3,"⇒":3,"⇓":3,"⇔":4,"∀":2,"∃":3,"∅":2,"∇":2,"∈":2,"∋":2,"∏":3,"∐":3,"∑":2,"∓":3,"∮":2,"≃":2,"≅":3,"≈":2,"≑":4,"≒":4,"≡":3,"≤":2,"≥":2,"≦":3,"≧":3,"≪":2,"≫":2,"≶":2,"≷":2,"≼":2,"≽":2,"⊆":2,"⊇":2,"⊊":2,"⊋":2,"⊕":3,"⊖":2,"⊗":3,"⊢":2,"⊣":2,"⊥":2,"⊧":3,"⊨":3,"⋐":2,"⋑":2,"⋔":2,"■":4,"□":3,"△":3,"▷":3,"◁":3,"⫅":3,"⫆":3,"⫋":3,"⫌":3,"µ":2,"ϕ":2,"⟦":3,"⟧":3,"£":2,"®":3,"⊎":3,"↯":2,"⊙":2,"⋮":3,"⋱":3,"∢":2,"⊴":2,"▶":2,"≜":5,"⇌":2,"↤":2,"↺":2,"⇄":4,"↻":2,"⇉":4,"⇝":2,"↷":2,"↠":3,"≲":2,"≳":2,"⊚":2,"⊡":4,"⊞":5,"⊠":5,"⊛":4,"⨏":2,"∯":3,"≍":2,"≐":3,"⊸":2,"∴":3,"∵":3,"⋰":3,"≬":2,"Æ":6,"♀":3,"♂":3,"☼":7,"☾":2,"€":3,"₩":2,"¢":2,"‰":4,"↕":3,"⇋":2,"⇕":4,"∰":4}
                 var traceLists=[];
                 var currentFormula=0;
-                var canvas = createDrawingPad(document.getElementById('drawing-pad'));
+                var colorList=['black','red','green','blue'];
+                var canvas = createDrawingPad(document.getElementById('drawing-pad'),colorList);
                 canvas.width=window.innerWidth-2;
                 canvas.height=window.innerHeight/2;
                 // var equationEditor=createEquationEditor(document.getElementById('equation-editor'));
                 var equationViewer=document.getElementById('typeset-formula');
                 var toolbar=document.getElementById('toolbar');
+                var fixColor=function(subEquation,index){
+                    if(subEquation.tagName=='mi'||subEquation.tagName=='mn'||subEquation.tagName=='mo'){
+                        // subEquation.classList.add('trace'+((index++)%colorList.length));
+                        var expectedStrokeCount=subEquation.textContent in strokeNumber?strokeNumber[subEquation.textContent]:1;
+                        subEquation.style.color=colorList[(index%colorList.length)];
+                        index+=expectedStrokeCount;
+                    }else{
+                        if(subEquation.tagName=='msqrt'||subEquation.tagName=='mroot'||subEquation.tagName=='mfrac'){
+                            subEquation.style.color=colorList[((index++)%colorList.length)];
+                        }
+                        var children=subEquation.children;
+                        for (var i = 0; i < children.length; i++) {
+                            index=fixColor(children[i],index);
+                        }
+                    }
+                    return index;
+                };
                 var setEquation=function(mathml){
                     equationViewer.innerHTML=mathml;
+                    fixColor(equationViewer,0)
                     MathJax.typeset([equationViewer]);
                     canvas.height=window.innerHeight-toolbar.offsetHeight-2;
                 };
