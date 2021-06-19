@@ -80,5 +80,8 @@ var createDrawingPad=function(container,colorList){
             canvas.setTraceList(traces);
         }
     };
+    canvas.setColorList=function(cList){
+        colorList=cList;
+    };
     return canvas;
 }

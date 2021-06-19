@@ -70,28 +70,35 @@
                 // var equationEditor=createEquationEditor(document.getElementById('equation-editor'));
                 var equationViewer=document.getElementById('typeset-formula');
                 var toolbar=document.getElementById('toolbar');
-                var fixColor=function(subEquation,index){
+                var fixColor=function(subEquation,cList,cIndex){
                     if(subEquation.tagName=='mi'||subEquation.tagName=='mn'||subEquation.tagName=='mo'){
                         // subEquation.classList.add('trace'+((index++)%colorList.length));
+                        var symbolColor=colorList[((cIndex++)%colorList.length)];
+                        subEquation.style.color=symbolColor;
                         var expectedStrokeCount=subEquation.textContent in strokeNumber?strokeNumber[subEquation.textContent]:1;
-                        subEquation.style.color=colorList[(index%colorList.length)];
-                        index+=expectedStrokeCount;
+                        for(var i=0;i<expectedStrokeCount;i++){
+                            cList.push(symbolColor);
+                        }
                     }else{
                         if(subEquation.tagName=='msqrt'||subEquation.tagName=='mroot'||subEquation.tagName=='mfrac'){
-                            subEquation.style.color=colorList[((index++)%colorList.length)];
+                            var symbolColor=colorList[((cIndex++)%colorList.length)];
+                            subEquation.style.color=symbolColor;
+                            cList.push(symbolColor);
                         }
                         var children=subEquation.children;
                         for (var i = 0; i < children.length; i++) {
-                            index=fixColor(children[i],index);
+                            cIndex=fixColor(children[i],cList,cIndex);
                         }
                     }
-                    return index;
+                    return cIndex;
                 };
                 var setEquation=function(mathml){
                     equationViewer.innerHTML=mathml;
-                    fixColor(equationViewer,0)
+                    var cList=[];
+                    fixColor(equationViewer,cList,0);
                     MathJax.typeset([equationViewer]);
                     canvas.height=window.innerHeight-toolbar.offsetHeight-2;
+                    canvas.setColorList(cList);
                 };
                 setEquation(formulas[currentFormula]);
                 document.getElementById('clear').onclick=canvas.clearTraceList;
