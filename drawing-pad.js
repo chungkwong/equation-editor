@@ -11,6 +11,7 @@ var createDrawingPad=function(container,colorList){
         var currentColor=colorList[i%colorList.length];
         context.fillStyle=currentColor;
         context.strokeStyle=currentColor;
+        context.lineWidth=lineWidth;
     };
     var drawstart=function(event){
         updateColor(traces.length);
@@ -19,7 +20,7 @@ var createDrawingPad=function(container,colorList){
         var y=event.pageY-canvas.offsetTop;
         context.moveTo(x,y);
         currentTrace.push([Math.round(x),Math.round(y)]);
-        context.fillRect(x-lineWidth/2,y-lineWidth/2,lineWidth,lineWidth);
+        context.fillRect(x-lineWidth,y-lineWidth,2*lineWidth,2*lineWidth);
         drawing=true;
     };
     var drawmove=function(event){
@@ -67,7 +68,7 @@ var createDrawingPad=function(container,colorList){
                 }
                 context.stroke();
             }else if(trace.length==1){
-                context.fillRect(trace[0][0]-lineWidth/2,trace[0][1]-lineWidth/2,lineWidth,lineWidth);
+                context.fillRect(trace[0][0]-lineWidth,trace[0][1]-lineWidth,2*lineWidth,2*lineWidth);
             }
         }
     };

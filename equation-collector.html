@@ -74,7 +74,7 @@
                     if(subEquation.tagName=='mi'||subEquation.tagName=='mn'||subEquation.tagName=='mo'){
                         // subEquation.classList.add('trace'+((index++)%colorList.length));
                         var symbolColor=colorList[((cIndex++)%colorList.length)];
-                        subEquation.style.color=symbolColor;
+                        subEquation.classList.add(symbolColor);
                         var expectedStrokeCount=subEquation.textContent in strokeNumber?strokeNumber[subEquation.textContent]:1;
                         for(var i=0;i<expectedStrokeCount;i++){
                             cList.push(symbolColor);
@@ -82,7 +82,7 @@
                     }else{
                         if(subEquation.tagName=='msqrt'||subEquation.tagName=='mroot'||subEquation.tagName=='mfrac'){
                             var symbolColor=colorList[((cIndex++)%colorList.length)];
-                            subEquation.style.color=symbolColor;
+                            subEquation.classList.add(symbolColor);
                             cList.push(symbolColor);
                         }
                         var children=subEquation.children;
@@ -158,6 +158,18 @@
             button{
                 font-size: 75%;
                 padding: 0;
+            }
+            .black{
+                color: black;
+            }
+            .red{
+                color: red;
+            }
+            .green{
+                color: green;
+            }
+            .blue{
+                color: blue;
             }
         </style>
     </head>
