@@ -63,12 +63,16 @@
                 var exportData=function(){
                     document.body.innerHTML='';
                     var exportContent=JSON.stringify(traceLists);
-                    var a = document.createElement('a');
-                    const file = new Blob([exportContent], {type: 'text/plain'});
-                    a.href= URL.createObjectURL(file);
-                    a.download = 'formulae.txt';
-                    a.click();
-                    URL.revokeObjectURL(a.href);
+                    try{
+                        var a = document.createElement('a');
+                        const file = new Blob([exportContent], {type: 'text/plain'});
+                        a.href= URL.createObjectURL(file);
+                        a.download = 'formulae.txt';
+                        a.click();
+                        URL.revokeObjectURL(a.href);
+                    }catch(e){
+                        console.log('Cannot save file');
+                    }
                     document.body.textContent=exportContent;
                     var range=document.createRange();
                     range.selectNode(document.body);
