@@ -60,28 +60,7 @@
                     // canvas.height=window.innerHeight-toolbar.offsetHeight-2;
                     canvas.setColorList(cList);
                 };
-                setEquation(formulas[currentFormula]);
-                document.getElementById('clear').onclick=canvas.clearTraceList;
-                document.getElementById('undo').onclick=canvas.removeLastTrace;
-                var showNextFormula=function(){
-                    canvas.clearTraceList();
-                    ++currentFormula;
-                    if(currentFormula<formulas.length){
-                        setEquation(formulas[currentFormula]);
-                    }else{
-                        document.getElementById('export').click();
-                    }
-                };
-                document.getElementById('skip').onclick=showNextFormula;
-                document.getElementById('submit').onclick=function(){
-                    if(currentFormula<formulas.length){
-                        var pair={latex:formulas[currentFormula],traceList:canvas.getTraceList()}
-                        traceLists.push(pair);
-                        window.traceLists=traceLists;
-                    }
-                    showNextFormula();
-                };
-                document.getElementById('export').onclick=function(){
+                var exportData=function(){
                     document.body.innerHTML='';
                     var exportContent=JSON.stringify(traceLists);
                     var a = document.createElement('a');
@@ -96,6 +75,28 @@
                     document.getSelection().addRange(range);
                     document.execCommand('copy');
                 };
+                setEquation(formulas[currentFormula]);
+                document.getElementById('clear').onclick=canvas.clearTraceList;
+                document.getElementById('undo').onclick=canvas.removeLastTrace;
+                var showNextFormula=function(){
+                    canvas.clearTraceList();
+                    ++currentFormula;
+                    if(currentFormula<formulas.length){
+                        setEquation(formulas[currentFormula]);
+                    }else{
+                        exportData();
+                    }
+                };
+                document.getElementById('skip').onclick=showNextFormula;
+                document.getElementById('submit').onclick=function(){
+                    if(currentFormula<formulas.length){
+                        var pair={latex:formulas[currentFormula],traceList:canvas.getTraceList()}
+                        traceLists.push(pair);
+                        window.traceLists=traceLists;
+                    }
+                    showNextFormula();
+                };
+                document.getElementById('export').onclick=exportData;
                 window.addEventListener('resize',function(){
                     canvas.width=window.innerWidth;
                     canvas.height=window.innerHeight;

@@ -57,6 +57,7 @@ var createDrawingPad=function(container,colorList){
         traces=traceList;
         context.fillStyle = "rgba(255,255,255,255)";
         context.fillRect(0,0,canvas.width,canvas.height);
+        context.fillStyle="rgba(0,0,0,255)";
         for(var i in traceList){
             var trace=traceList[i];
             updateColor(i);
