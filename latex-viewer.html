@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>LaTeX预览</title>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <!-- <script type="text/javascript" src="equation-editor.js"></script>
+        <link rel="stylesheet" type="text/css" href="equation-editor.css"> -->
+    </head>
+    <body>
+        <h1><em>LaTeX</em> 预览</h1>
+		<textarea id='MathInput' cols='50' rows='5' style='margin-top:5px' placeholder="e^{i\pi}+1=0"></textarea>
+		<div id='MathPreview' style='border:1px solid; padding: 3px; width:90%; margin-top:5px'></div>
+		<script>
+            var mathInput=document.getElementById('MathInput');
+            var mathPreview=document.getElementById('MathPreview');
+            mathInput.oninput=function(){
+                mathPreview.innerHTML='$$'+mathInput.value.replace('&','&amp;').replace('<','&lt;')+'$$';
+                MathJax.typeset([mathPreview]);
+            };
+		</script>
+    </body>
+</html>

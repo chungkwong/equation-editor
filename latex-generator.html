@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>LaTeX生成器</title>
+        <style>
+            textarea{
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <h1><em>LaTeX</em> 生成</h1>
+        语法：<br>
+        <textarea id='GrammarInput' cols='50' rows='5' style='margin-top:5px'>
+0.80 start additive_expression
+0.15  additive_expression = additive_expression
+0.05  additive_expression =
+0.70 additive_expression multiplicative_expression
+0.01  + multiplicative_expression
+0.04  - multiplicative_expression
+0.15  additive_expression + multiplicative_expression
+0.10  additive_expression - multiplicative_expression
+0.70 multiplicative_expression function_expression
+0.10  multiplicative_expression function_expression
+0.08  multiplicative_expression \times function_expression
+0.08  multiplicative_expression \div function_expression
+0.03  multiplicative_expression / function_expression
+0.01  multiplicative_expression : function_expression
+0.90 function_expression postfix_expression
+0.10  function function_expression
+0.95 postfix_expression primitive_expression
+0.03  postfix_expression \%
+0.02  postfix_expression !
+0.70 primitive_expression constant
+0.08  ( additive_expression )
+0.02  | additive_expression |
+0.05  primitive_expression ^ group
+0.10  \frac group group
+0.06  \sqrt group
+0.04  \sqrt [ integer ] group
+0.14 constant ?
+0.05  \pi
+0.05  e
+0.01  \phi
+0.60  integer
+0.15  integer . integer
+0.75 integer digit
+0.25  integer digit
+1.00 group { additive_expression }
+0.10 digit 0
+0.10  1
+0.10  2
+0.10  3
+0.10  4
+0.10  5
+0.10  6
+0.10  7
+0.10  8
+0.10  9
+0.60 function arc_or_not trigonometry_function
+0.06  ar_or_not trigonometry_function h
+0.18  l o g base
+0.16  l n
+0.50 base
+0.50  _ group
+0.86 arc_or_not
+0.05  a r c
+0.09  a
+0.86 ar_or_not
+0.05  a r c
+0.09  a
+0.44 trigonometry_function s i n
+0.41  c o s
+0.12  t a n
+0.03  c o t</textarea><br>
+        最大长度<input id='LengthInput' type="number" min="1" step="1" value="48"><br>
+        生成的公式数<input id='CountInput' type="number" min="1" step="1" value="2000"><br>
+        <button id="Generate">生成</button><br>
+        <textarea id='Output' rows='10'>
+
+        </textarea>
+        <script>
+            var grammarInput=document.getElementById('GrammarInput');
+            var lengthInput=document.getElementById('LengthInput');
+            var countInput=document.getElementById('CountInput');
+            var output=document.getElementById('Output');
+            document.getElementById('Generate').onclick=function(){
+                var parseGrammar=function(grammarText){
+                    grammar={}
+                    var lines=grammarText.split(/[\r\n]+/);
+                    var target=null;
+                    for(var i in lines){
+                        var line=lines[i];
+                        var pair=line.split(' ');
+                        if(pair.length>=2){
+                            if(pair[1].length>0){
+                                target=pair[1];
+                                grammar[target]=[];
+                            }
+                            var children=[];
+                            for(var j=2;j<pair.length;j++){
+                                children.push(pair[j]);
+                            }
+                            var frequency=parseFloat(pair[0]);
+                            grammar[target].push({'frequency':frequency,'children':children});
+                        }
+                    }
+                    for(key in grammar){
+                        var choices=grammar[key];
+                        var sumFrequency=0.0;
+                        for(var i in choices){
+                            sumFrequency+=choices[i].frequency;
+                        }
+                        for(var i in choices){
+                            choice=choices[i];
+                            choice.frequency/=sumFrequency;
+                        }
+                    }
+                    return grammar;
+                };
+                var grammar=parseGrammar(grammarInput.value);
+                var len=parseInt(lengthInput.value);
+                var count=parseInt(countInput.value);
+                var collectTokens=function(startSymbol,tokens){
+                    if(tokens.length>len){
+                        return;
+                    }
+                    if(startSymbol in grammar){
+                        var choices=grammar[startSymbol];
+                        var selection=Math.random();
+                        var tmp=0;
+                        var chosen=choices[choices.length-1];
+                        for(var i in choices){
+                            var choice=choices[i];
+                            tmp+=choice.frequency;
+                            if(selection<tmp){
+                                chosen=choice;
+                                break;
+                            }
+                        }
+                        var children=chosen.children
+                        for(var i in children){
+                            if(children[i]==undefined){
+                                console.log(children.join('@'));
+                            }
+                            collectTokens(children[i],tokens);
+                        }
+                    }else{
+                        tokens.push(startSymbol);
+                    }
+                };
+                var formulae=[];
+                while(formulae.length<count){
+                    var tokens=[];
+                    collectTokens('start',tokens);
+                    if(tokens.length>1&&tokens.length<=len){
+                        formulae.push(tokens.join(' '));
+                    }
+                }
+                output.value=formulae.join('\n');
+            };
+        </script>
+    </body>
+</html>
