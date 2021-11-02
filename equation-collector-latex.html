@@ -20,6 +20,11 @@
                 }
                 addFormula('\\frac { 1 } { 6 } + \\frac { 1 } { 3 } = \\frac { 1 } { 2 }',1);
                 addFormula('s i n \\sqrt { 8 - ? ! \\times c o t 2 - 6 }',1);
+                var equationCounter=document.getElementById('equation-counter');
+                var updateCounter=function(){
+                    equationCounter.textContent=(currentFormula+1)+'/'+formulas.length;
+                };
+                updateCounter();
                 var fileChooser=document.getElementById('file-chooser');
                 var setTranscript=function() {
                     var file = fileChooser.files[0];
@@ -37,6 +42,7 @@
                             }
                         }
                         setEquation(formulas[0]);
+                        updateCounter();
                     }
                     reader.onerror = function() {
                         alert('未能加载文件');
@@ -87,6 +93,7 @@
                     ++currentFormula;
                     if(currentFormula<formulas.length){
                         setEquation(formulas[currentFormula]);
+                        updateCounter();
                     }else{
                         exportData();
                     }
@@ -156,7 +163,7 @@
         <!-- <div id='equation-editor'></div> -->
         <div id='drawing-pad'></div>
         <div id='transcript'>
-            请选择公式清单：<input id='file-chooser' type="file">
+            请选择公式清单：<input id='file-chooser' type="file"><span id='equation-counter'></span>
         </div>
         <div id='toolbar'>
             <div id='typeset-formula'></div>
