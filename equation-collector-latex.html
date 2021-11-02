@@ -107,7 +107,11 @@
                     }
                     showNextFormula();
                 };
-                document.getElementById('export').onclick=exportData;
+                document.getElementById('export').onclick=function(){
+                    if(window.confirm('确定要结束书写并导出？')){
+                        exportData();
+                    }
+                }
                 window.addEventListener('resize',function(){
                     canvas.width=window.innerWidth;
                     canvas.height=window.innerHeight;
