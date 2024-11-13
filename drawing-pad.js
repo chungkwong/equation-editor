@@ -45,9 +45,9 @@ var createDrawingPad=function(container,colorList){
         canvas.addEventListener('touchmove',function(event){drawmove(event.touches[0]);event.preventDefault();});
         canvas.addEventListener('touchend',function(event){drawend(event.changedTouches[0])});
     }else{
-        canvas.addEventListener('mousedown',drawstart);
-        canvas.addEventListener('mousemove',drawmove);
-        canvas.addEventListener('mouseup',drawend);    
+        canvas.addEventListener('pointerdown',drawstart);
+        canvas.addEventListener('pointermove',drawmove);
+        canvas.addEventListener('pointerup',drawend);    
     }    
     container.appendChild(canvas);
     canvas.getTraceList=function(){
