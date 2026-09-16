@@ -1,5 +1,6 @@
 var createDrawingPad=function(container,colorList){
     canvas=document.createElement('canvas');
+    canvas.style.touchAction = 'none';
     var lineWidth=3.0,halfLineWidth=lineWidth*0.5;
     var context=canvas.getContext('2d');
     context.lineWidth=lineWidth;
@@ -13,7 +14,6 @@ var createDrawingPad=function(container,colorList){
         context.strokeStyle=currentColor;
         context.lineWidth=lineWidth;
     };
-    var useTouch='ontouchstart' in window;
     var drawstart=function(event){
         event.preventDefault();
         if(stylusOnly&&event.pointerType!='pen'){
@@ -31,9 +31,7 @@ var createDrawingPad=function(container,colorList){
     var drawmove=function(event){
         if(drawing){
             event.preventDefault();
-            if(useTouch){
-                event=event.touches[0];
-            }else{
+            if(event.getCoalescedEvents){
                 var pastEvents=event.getCoalescedEvents();
                 for(var i in pastEvents){
                     var e=pastEvents[i];
@@ -67,17 +65,10 @@ var createDrawingPad=function(container,colorList){
             canvas.setTraceList(canvas.getTraceList());
         }
     };
-    if(useTouch){
-        canvas.addEventListener('pointerdown',drawstart, { passive: false });
-        canvas.addEventListener('touchmove',drawmove, { passive: false });
-        canvas.addEventListener('touchend',drawend, { passive: false });
-        canvas.addEventListener('touchcancel',drawcancel, { passive: false });
-    }else{
-        canvas.addEventListener('pointerdown',drawstart, { passive: false });
-        canvas.addEventListener('pointermove',drawmove, { passive: false });
-        canvas.addEventListener('pointerup',drawend, { passive: false });
-        canvas.addEventListener('pointercancel',drawcancel, { passive: false });
-    }
+    canvas.addEventListener('pointerdown',drawstart, { passive: false });
+    canvas.addEventListener('pointermove',drawmove, { passive: false });
+    canvas.addEventListener('pointerup',drawend, { passive: false });
+    canvas.addEventListener('pointercancel',drawcancel, { passive: false });
     container.appendChild(canvas);
     canvas.getTraceList=function(){
         return traces;
