@@ -179,6 +179,76 @@ var createEquationEditor=function(container){
         flatStructure();
         return supEnd-2;
       };
+    }else if(type=='munder'||type=='mover'){
+      var bStart=caretPositions.length;
+      updateCaretPositions(root.children[0],false,x,y);
+      var sStart=caretPositions.length, bEnd=sStart-1;
+      updateCaretPositions(root.children[1],false,x,y);
+      var sEnd=caretPositions.length-1;
+      var flatStructure=function(){
+        var b=root.children[0];
+        var s=root.children[1];
+        addAllBefore(b,root);
+        addAllBefore(s,root);
+        root.remove();
+      };
+      caretPositions[bStart].deleteForward=function(){
+        flatStructure();
+        return bStart-1;
+      };
+      caretPositions[bEnd].deleteForward=function(){
+        flatStructure();
+        return bEnd-1;
+      };
+      caretPositions[sStart].deleteBackward=function(){
+        flatStructure();
+        return bEnd-1;
+      };
+      caretPositions[sEnd].deleteForward=function(){
+        flatStructure();
+        return sEnd-2;
+      };
+    }else if(type=='munderover'){
+      var bStart=caretPositions.length;
+      updateCaretPositions(root.children[0],false,x,y);
+      var subStart=caretPositions.length, bEnd=subStart-1;
+      updateCaretPositions(root.children[1],false,x,y);
+      var supStart=caretPositions.length, subEnd=supStart-1;
+      updateCaretPositions(root.children[2],false,x,y);
+      var supEnd=caretPositions.length-1;
+      var flatStructure=function(){
+        var b=root.children[0];
+        var sub=root.children[1];
+        var sup=root.children[2];
+        addAllBefore(b,root);
+        addAllBefore(sub,root);
+        addAllBefore(sup,root);
+        root.remove();
+      };
+      caretPositions[bStart].deleteForward=function(){
+        flatStructure();
+        return bStart-1;
+      };
+      caretPositions[bEnd].deleteForward=function(){
+        flatStructure();
+        return bEnd-1;
+      };
+      caretPositions[subStart].deleteBackward=function(){
+        flatStructure();
+        return bEnd-1;
+      };
+      caretPositions[subEnd].deleteForward=function(){
+        flatStructure();
+        return subEnd-2;
+      };
+      caretPositions[supStart].deleteBackward=function(){
+        flatStructure();
+        return subEnd-2;
+      };
+      caretPositions[supEnd].deleteForward=function(){
+        flatStructure();
+        return supEnd-3;
+      };
     }else if(type=='mfrac'){
       var nStart=caretPositions.length;
       updateCaretPositions(root.children[0],false,x,y);
@@ -694,6 +764,66 @@ var createEquationEditor=function(container){
     }
     updateEquation();
   }
+  var insertUnder=function(){
+    var a=removeSelection();
+    var position=caretPositions[caret];
+    if(position.index>0){
+      var last=position.parent.children[position.index-1].cloneNode(true);
+      if(last.tagName.toLowerCase()=='mover'){
+        let subsup=document.createElement('munderover');
+        subsup.appendChild(last.firstChild);
+        subsup.appendChild(a);
+        subsup.appendChild(last.firstChild);
+        position.parent.replaceChild(subsup,position.parent.children[position.index-1]);
+        caret-=(getCaretPositionCount(subsup.children[2])-1);
+      }else{
+        var base=document.createElement('mrow');
+        base.appendChild(last);
+        var sub=document.createElement('munder');
+        sub.appendChild(base);
+        sub.appendChild(a);
+        position.parent.replaceChild(sub,position.parent.children[position.index-1]);
+        caret+=getCaretPositionCount(a)+1;
+      }
+      anchor=caret;
+    }else{
+      var sub=document.createElement('munder');
+      sub.appendChild(document.createElement('mrow'));
+      sub.appendChild(a);
+      insert(sub,getCaretPositionCount(a));
+    }
+    updateEquation();
+  }
+  var insertOver=function(){
+    var a=removeSelection();
+    var position=caretPositions[caret];
+    if(position.index>0){
+      var last=position.parent.children[position.index-1].cloneNode(true);
+      if(last.tagName.toLowerCase()=='munder'){
+        var subsup=document.createElement('munderover');
+        subsup.appendChild(last.firstChild);
+        subsup.appendChild(last.firstChild);
+        subsup.appendChild(a);
+        position.parent.replaceChild(subsup,position.parent.children[position.index-1]);
+        caret+=getCaretPositionCount(a)-1;
+      }else{
+        var base=document.createElement('mrow');
+        base.appendChild(last);
+        var sub=document.createElement('mover');
+        sub.appendChild(base);
+        sub.appendChild(a);
+        position.parent.replaceChild(sub,position.parent.children[position.index-1]);
+        caret+=getCaretPositionCount(a)+1;
+      }
+      anchor=caret;
+    }else{
+      var sub=document.createElement('mover');
+      sub.appendChild(document.createElement('mrow'));
+      sub.appendChild(a);
+      insert(sub,getCaretPositionCount(a));
+    }
+    updateEquation();
+  }
   var selectAll=function(){
     anchor=0;
     caret=caretPositions.length-1;
@@ -795,8 +925,10 @@ var createEquationEditor=function(container){
     button.title=tooltip;
     toolbar.appendChild(button);
   };
-  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub,'Suscript');
+  addStructureIcon('<math><msub><mi>■</mi><mi>□</mi></msub></math>',insertSub,'Subscript');
   addStructureIcon('<math><msup><mi>■</mi><mi>□</mi></msup></math>',insertSup,'Superscript');
+  addStructureIcon('<math><munder><mi>■</mi><mi>□</mi></munder></math>',insertUnder,'Underscript');
+  addStructureIcon('<math><mover><mi>■</mi><mi>□</mi></mover></math>',insertOver,'Overscript');
   addStructureIcon('<math><mfrac><mi>□</mi><mi>■</mi></mfrac></math>',insertFraction,'Fraction');
   addStructureIcon('<math><msqrt><mi>□</mi></msqrt></math>',insertSquareRoot,'Square root');
   addStructureIcon('<math><mroot><mi>□</mi><mi>■</mi></mroot></math>',insertNthRoot,'Nth root');
@@ -1242,6 +1374,12 @@ var createEquationEditor=function(container){
       return encodeLatex(root.children[0])+'^{'+encodeLatex(root.children[1])+'}';
     }else if(type=='msubsup'){
       return encodeLatex(root.children[0])+'_{'+encodeLatex(root.children[1])+'}^{'+encodeLatex(root.children[2])+'}';
+    }else if(type=='munder'){
+      return '\\underset{'+encodeLatex(root.children[1])+'}'+encodeLatex(root.children[0]);
+    }else if(type=='mover'){
+      return '\\overset{'+encodeLatex(root.children[1])+'}'+encodeLatex(root.children[0]);
+    }else if(type=='munderover'){
+      return '\\underset{'+encodeLatex(root.children[1])+'}'+'\\overset{'+encodeLatex(root.children[2])+'}'+encodeLatex(root.children[0]);
     }else if(type=='mfrac'){
       return '\\frac{'+encodeLatex(root.children[0])+'}{'+encodeLatex(root.children[1])+'}';
     }else if(type=='msqrt'){

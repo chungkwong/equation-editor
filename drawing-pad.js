@@ -1,10 +1,10 @@
 var createDrawingPad=function(container,colorList){
     canvas=document.createElement('canvas');
-    var lineWidth=3.0;
+    var lineWidth=3.0,halfLineWidth=lineWidth*0.5;
     var context=canvas.getContext('2d');
     context.lineWidth=lineWidth;
     context.fillStyle="black";
-    var drawing=false;
+    var drawing=false,stylusOnly=false;
     var traces=[];
     var currentTrace=[];
     var updateColor=function(i){
@@ -13,18 +13,36 @@ var createDrawingPad=function(container,colorList){
         context.strokeStyle=currentColor;
         context.lineWidth=lineWidth;
     };
+    var useTouch='ontouchstart' in window;
     var drawstart=function(event){
+        event.preventDefault();
+        if(stylusOnly&&event.pointerType!='pen'){
+            return;
+        }
         updateColor(traces.length);
         context.beginPath();
         var x=event.pageX-canvas.offsetLeft;
         var y=event.pageY-canvas.offsetTop;
         context.moveTo(x,y);
         currentTrace.push([Math.round(x),Math.round(y)]);
-        context.fillRect(x-lineWidth,y-lineWidth,2*lineWidth,2*lineWidth);
+        context.fillRect(x-halfLineWidth,y-halfLineWidth,lineWidth,lineWidth);
         drawing=true;
     };
     var drawmove=function(event){
         if(drawing){
+            event.preventDefault();
+            if(useTouch){
+                event=event.touches[0];
+            }else{
+                var pastEvents=event.getCoalescedEvents();
+                for(var i in pastEvents){
+                    var e=pastEvents[i];
+                    var x=e.pageX-canvas.offsetLeft;
+                    var y=e.pageY-canvas.offsetTop;
+                    context.lineTo(x,y);
+                    currentTrace.push([Math.round(x),Math.round(y)]);
+                }
+            }
             var x=event.pageX-canvas.offsetLeft;
             var y=event.pageY-canvas.offsetTop;
             context.lineTo(x,y);
@@ -34,21 +52,32 @@ var createDrawingPad=function(container,colorList){
     };
     var drawend=function(event){
         if(drawing){
+            event.preventDefault();
             //drawmove(event);
             traces.push(currentTrace);
             currentTrace=[];
             drawing=false;
         }
     };
-    if('ontouchstart' in document.documentElement){
-        canvas.addEventListener('touchstart',function(event){drawstart(event.touches[0]);});
-        canvas.addEventListener('touchmove',function(event){drawmove(event.touches[0]);event.preventDefault();});
-        canvas.addEventListener('touchend',function(event){drawend(event.changedTouches[0])});
+    var drawcancel=function(event){
+        if(drawing){
+            event.preventDefault();
+            currentTrace=[];
+            drawing=false;
+            canvas.setTraceList(canvas.getTraceList());
+        }
+    };
+    if(useTouch){
+        canvas.addEventListener('pointerdown',drawstart, { passive: false });
+        canvas.addEventListener('touchmove',drawmove, { passive: false });
+        canvas.addEventListener('touchend',drawend, { passive: false });
+        canvas.addEventListener('touchcancel',drawcancel, { passive: false });
     }else{
-        canvas.addEventListener('pointerdown',drawstart);
-        canvas.addEventListener('pointermove',drawmove);
-        canvas.addEventListener('pointerup',drawend);    
-    }    
+        canvas.addEventListener('pointerdown',drawstart, { passive: false });
+        canvas.addEventListener('pointermove',drawmove, { passive: false });
+        canvas.addEventListener('pointerup',drawend, { passive: false });
+        canvas.addEventListener('pointercancel',drawcancel, { passive: false });
+    }
     container.appendChild(canvas);
     canvas.getTraceList=function(){
         return traces;
@@ -69,21 +98,26 @@ var createDrawingPad=function(container,colorList){
                 }
                 context.stroke();
             }else if(trace.length==1){
-                context.fillRect(trace[0][0]-lineWidth,trace[0][1]-lineWidth,2*lineWidth,2*lineWidth);
+                context.fillRect(trace[0][0]-halfLineWidth,trace[0][1]-halfLineWidth,lineWidth,lineWidth);
             }
         }
     };
     canvas.clearTraceList=function(){
         canvas.setTraceList([]);
+        canvas.focus();
     };
     canvas.removeLastTrace=function(){
         if(traces.length>0){
             traces.pop();
             canvas.setTraceList(traces);
+            canvas.focus();
         }
     };
     canvas.setColorList=function(cList){
         colorList=cList;
+    };
+    canvas.setStylusOnly=function(value){
+        stylusOnly=value;
     };
     return canvas;
 }

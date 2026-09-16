@@ -2,11 +2,9 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <title>数学公式采集</title>
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <!-- <script type="text/javascript" src="equation-editor.js"></script>
-        <link rel="stylesheet" type="text/css" href="equation-editor.css"> -->
         <script type="text/javascript" src="drawing-pad.js"></script>
         <script type='text/javascript'>
             window.addEventListener('load', function () {
@@ -16,50 +14,6 @@
                         formulas.push(formula);
                     }
                 }
-                // addFormula('<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>z</mi></mrow></mfrac></mrow></math>',1);
-                // addFormula('<math><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>±</mo><msqrt><mrow><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow></math>',1);
-                // addFormula('<math><mrow><mo>:</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>;</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>?</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>@</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⋐</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⋑</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⇑</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>‡</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≑</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≒</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≧</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≫</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≦</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≶</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>≪</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⌞</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⌟</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>↖</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>œ</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⫅</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⫋</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⫆</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⊋</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⫌</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>↙</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⌜</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>υ</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⌝</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>℘</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>¥</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>€</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>£</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>₩</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>¢</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>‰</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>↕</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>↼</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>↽</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⇁</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⇋</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>⇕</mo></mrow></math>',10);
-                // addFormula('<math><mrow><mo>∰</mo></mrow></math>',10);
                 addFormula('-',20);
                 addFormula('∧',20);
                 addFormula('◠',20);
@@ -79,7 +33,7 @@
                 var currentFormula=0;
                 var colorList=['black','red','green','blue'];
                 var canvas = createDrawingPad(document.getElementById('drawing-pad'),colorList);
-                canvas.width=window.innerWidth-2;
+                canvas.width=window.innerWidth-4;
                 canvas.height=window.innerHeight/2;
                 // var equationEditor=createEquationEditor(document.getElementById('equation-editor'));
                 var equationViewer=document.getElementById('typeset-formula');
@@ -125,6 +79,7 @@
                     }else{
                         document.getElementById('export').click();
                     }
+                    canvas.focus();
                 };
                 document.getElementById('skip').onclick=showNextFormula;
                 document.getElementById('submit').onclick=function(){
@@ -134,6 +89,7 @@
                         window.traceLists=traceLists;
                     }
                     showNextFormula();
+                    canvas.focus();
                 };
                 document.getElementById('export').onclick=function(){
                     document.body.innerHTML='';
@@ -149,11 +105,19 @@
                     range.selectNode(document.body);
                     document.getSelection().addRange(range);
                     document.execCommand('copy');
+                    canvas.focus();
                 };
+                var stylusOnlyButton=document.getElementById("stylus-only")
+                stylusOnlyButton.onchange=function(){
+                    canvas.setStylusOnly(stylusOnlyButton.checked);
+                    canvas.focus();
+                }
                 window.addEventListener('resize',function(){
-                    canvas.width=window.innerWidth-2;
-                    canvas.height=window.innerHeight-toolbar.offsetHeight-2;
+                    canvas.width=window.innerWidth-4;
+                    canvas.height=window.innerHeight-toolbar.offsetHeight-4;
+                    canvas.setTraceList(canvas.getTraceList());
                 });
+                canvas.focus();
             },false); // end window.onLoad
         </script>
         <style>
@@ -185,6 +149,18 @@
             .blue{
                 color: blue;
             }
+            canvas{
+                display: block;
+                touch-action: none;
+                user-select: none;
+            }
+            #buttons{
+                display:inline;
+                float:right;
+            }
+            #typeset-formula{
+                display:inline;
+            }
         </style>
     </head>
     <body>
@@ -192,11 +168,13 @@
         <div id='drawing-pad'></div>
         <div id='toolbar'>
             <div id='typeset-formula'></div>
+            <div id='buttons'>
+            <input type="checkbox" id="stylus-only"><label for="stylus-only">仅笔写</label>
             <button id='export'>导出</button>
             <button id='clear'>重写</button>
             <button id='undo'>撤销</button>
             <button id='skip'>跳过</button>
-            <button id='submit'>提交</button>
+            <button id='submit'>提交</button></div>
         </div>
     </body>
 </html>
